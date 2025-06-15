@@ -1,9 +1,9 @@
 package asia.igsaas.utils;
 
 public class BotCommand {
-    public static final String LIST_EXPENSE = "/list_expense";
+    public static final String GET_SUMMARY_PERDAY = "/get_summary";
 
-    public static boolean isListExpense(String command) {
-        return LIST_EXPENSE.equals(command);
+    public static boolean isDailySummary(String command) {
+        return GET_SUMMARY_PERDAY.equals(command) || command.startsWith(GET_SUMMARY_PERDAY + "@");
     }
 }

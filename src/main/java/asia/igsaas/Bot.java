@@ -63,7 +63,7 @@ public class Bot extends TelegramLongPollingBot {
 
             // parse & save data
             if (message.isCommand()) {
-                log.info("command message: {}", message);
+                log.debug("command message: {}", message);
                 if (isDailySummary(message.getText())) {
                     final var totalAmount = incomingService.getSummary(chatId, DateUtils.today());
                     var md = getMD(totalAmount);

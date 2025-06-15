@@ -26,6 +26,13 @@ public class StorageUtils {
 
     public synchronized static HashMap<Currency, BigDecimal> getTotalIncoming(Long groupId, LocalDate localDate) {
         HashMap<LocalDate, HashMap<Currency, BigDecimal>> group = DB.get(groupId);
-        return group.get(localDate);
+        if (group == null) {
+            return new HashMap<>();
+        }
+        var result = group.get(localDate);
+        if (result == null) {
+            result = new HashMap<>();
+        }
+        return result;
     }
 }

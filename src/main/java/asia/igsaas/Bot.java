@@ -1,5 +1,8 @@
-package asia.igsaas.utils;
+package asia.igsaas;
 
+import asia.igsaas.utils.DateUtils;
+import asia.igsaas.utils.PaywayParser;
+import asia.igsaas.utils.StorageUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -11,6 +14,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.math.BigDecimal;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static asia.igsaas.utils.BotCommand.isDailySummary;
 
@@ -52,7 +57,17 @@ public class Bot extends TelegramLongPollingBot {
                 log.info("command message: {}", message);
                 if (isDailySummary(message.getText())) {
                     final var totalAmount = StorageUtils.getTotalIncoming(chatId, DateUtils.today());
-                    sendText(chatId, "Total incoming for %s is %s".formatted(DateUtils.today(), totalAmount));
+                    var md = getMD(totalAmount);
+                    log.info("md: {}", md);
+                    /*
+                    var md = "\\- Nihao \n \\- ma";
+                    String listMessage = "Fukkkk,\n Here's a list:\n";
+                    listMessage += "\\- First item\n"; // Escaped hyphen
+                    listMessage += "\\- Second item\n"; // Escaped hyphen
+                    listMessage += "\\- Third item";
+
+                     */
+                    sendMD(chatId, md);
                 }
             } else if (StringUtils.hasText(message.getText())) {
                 final var incoming = PaywayParser.parseAmountAndCurrency(message.getText());
@@ -80,10 +95,11 @@ public class Bot extends TelegramLongPollingBot {
         }
     }
 
-    private void sendHtml(Long who, String txt) {
+    private void sendMD(Long who, String md) {
         SendMessage sm = SendMessage.builder()
                 .chatId(who.toString())
-                .parseMode(ParseMode.HTML)
+                .text(md)
+                .parseMode(ParseMode.MARKDOWNV2)
                 .build();
         try {
             execute(sm);                        //Actually sending the message
@@ -92,14 +108,14 @@ public class Bot extends TelegramLongPollingBot {
         }
     }
 
-    private String getHtml(Long who) {
-        return """
-                <body>
-                <ul>
-                <li> test 1 </li>
-                <li> test 2 </li>
-                </body>
-                """;
+    private String getMD(Map<Currency, BigDecimal> results) {
+        String md = "Total income of: *" + DateUtils.today() + "* is: \n";
+        md = md.replace("-", "\\-");
+        for (Map.Entry<Currency, BigDecimal> entry : results.entrySet()) {
+            md = md.concat("\\- *" + entry.getKey().toString() + "* : " + entry.getValue() + entry.getKey().getSymbol() + "\n");
+        }
+        md = md.replace(".", "\\.");
+        return md;
     }
 
     private void sendText(Long who, String what) {

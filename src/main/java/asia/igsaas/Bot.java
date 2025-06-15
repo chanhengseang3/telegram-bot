@@ -1,6 +1,7 @@
 package asia.igsaas;
 
 import asia.igsaas.service.IncomeService;
+import asia.igsaas.service.MessageService;
 import asia.igsaas.utils.BotUtils;
 import asia.igsaas.utils.DateUtils;
 import asia.igsaas.utils.PaywayParser;
@@ -10,6 +11,7 @@ import org.springframework.util.StringUtils;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ForceReplyKeyboard;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -30,6 +32,7 @@ public class Bot extends TelegramLongPollingBot {
     private static final String BOT_TOKEN = "7681368869:AAE5QlSXTOkeQMuJ3S6znuyCeyPVvo1YWFs";
 
     private final IncomeService incomeService;
+    private final MessageService messageService;
 
     @Override
     public String getBotUsername() {
@@ -37,9 +40,10 @@ public class Bot extends TelegramLongPollingBot {
         return "payment_bk_bot";
     }
 
-    public Bot(IncomeService incomeService) throws TelegramApiException {
+    public Bot(IncomeService incomeService, MessageService messageService) throws TelegramApiException {
         super(BOT_TOKEN);
         this.incomeService = incomeService;
+        this.messageService = messageService;
         TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
         botsApi.registerBot(this);
     }
@@ -52,7 +56,8 @@ public class Bot extends TelegramLongPollingBot {
         if (update.hasCallbackQuery()) {
             var callbackQuery = update.getCallbackQuery();
             var data = callbackQuery.getData();
-            var chatId = callbackQuery.getMessage().getChatId();
+            var message = callbackQuery.getMessage();
+            var chatId = message.getChatId();
             if ("daily_summary".equals(data)) {
                 var date = DateUtils.today();
                 var buttons = new ArrayList<InlineKeyboardButton>();
@@ -86,9 +91,16 @@ public class Bot extends TelegramLongPollingBot {
                 final var date = DateUtils.parseDate(dateStr);
                 final var result = incomeService.getSummary(chatId, date);
                 var md = BotUtils.getMD(date, result);
+//                var senderId = update.getCallbackQuery().getFrom().getId();
                 BotUtils.sendMD(this, chatId, md);
             } else if (data.equals("other_dates")) {
-                BotUtils.sendText(this, chatId, "ចង់ឆែកថ្ងៃណា?");
+//                BotUtils.sendText(this, chatId, );
+                var keyboardM3 = ForceReplyKeyboard.builder()
+                        .inputFieldPlaceholder(DateUtils.today().toString())
+                        .forceReply(true)
+                        .build();
+                var result = BotUtils.sendMenu(this, chatId, "ចង់ឆែកថ្ងៃណា?", keyboardM3);
+                messageService.saveMessage(result.getMessageId());
             }
             return;
         }
@@ -131,6 +143,29 @@ public class Bot extends TelegramLongPollingBot {
                     var menuList = InlineKeyboardMarkup.builder()
                             .keyboardRow(List.of(daily, weekly, monthly)).build();
                     BotUtils.sendMenu(this, chatId, "ជ្រើសរើសរបាយការណ៍ប្រចាំ:", menuList);
+                }
+
+            } else if (message.isReply()) {
+
+                // check if it is bot message
+                var isReplyingToBot = messageService.userReplyingToBotQuestion(message.getReplyToMessage().getMessageId());
+                if (!isReplyingToBot) {
+                    return;
+                }
+
+                final var text = message.getText();
+                try {
+                    final var date = DateUtils.parseDate(text);
+                    final var totalAmount = incomeService.getSummary(chatId, date);
+                    var md = BotUtils.getMD(date, totalAmount);
+                    BotUtils.sendMD(this, chatId, md);
+                } catch (Exception e) {
+                    var keyboardM3 = ForceReplyKeyboard.builder()
+                            .inputFieldPlaceholder(DateUtils.today().toString())
+                            .forceReply(true)
+                            .build();
+                    var result = BotUtils.sendMenu(this, chatId, "បញ្ចូល\u200Bម្ដង\u200Bទៀតមកប្រូ\u200B អត់\u200Bត្រូវទេ", keyboardM3);
+                    messageService.saveMessage(result.getMessageId());
                 }
             } else if (StringUtils.hasText(message.getText())) {
                 final var incoming = PaywayParser.parseAmountAndCurrency(message.getText());

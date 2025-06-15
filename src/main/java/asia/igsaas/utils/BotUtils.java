@@ -5,6 +5,7 @@ import asia.igsaas.domain.IncomingBalance;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
@@ -16,7 +17,7 @@ import java.util.List;
 
 public class BotUtils {
 
-    public static void sendMenu(TelegramLongPollingBot bot, Long who, String txt, ReplyKeyboard kb) {
+    public static Message sendMenu(TelegramLongPollingBot bot, Long who, String txt, ReplyKeyboard kb) {
         var sm = SendMessage.builder()
                 .chatId(who.toString())
                 .parseMode("HTML")
@@ -25,7 +26,7 @@ public class BotUtils {
                 .build();
 
         try {
-            bot.execute(sm);
+            return bot.execute(sm);
         } catch (TelegramApiException e) {
             throw new RuntimeException(e);
         }

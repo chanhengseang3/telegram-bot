@@ -12,7 +12,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class IncomingService {
+public class IncomeService {
 
     private final IncomingRepository incomingRepository;
 

@@ -59,6 +59,12 @@ public class ButtonCallbackHandler {
             final var dateStr = data.replaceFirst("summary_of_", "");
             final var date = DateUtils.parseDate(dateStr);
             final var result = incomeService.getSummary(chatId, date);
+
+            // group name
+            //final var groupName = update.getMessage().getChat().getTitle();
+            // sender name
+            //final var senderName = update.getMessage().getFrom().getUserName();
+
             var md = BotUtils.getMD(date, result);
 //                var senderId = update.getCallbackQuery().getFrom().getId();
             BotUtils.sendMD(bot, chatId, md);

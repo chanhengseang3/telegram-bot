@@ -15,7 +15,6 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.math.BigDecimal;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static asia.igsaas.utils.BotCommand.isDailySummary;
 
@@ -58,14 +57,13 @@ public class Bot extends TelegramLongPollingBot {
                 if (isDailySummary(message.getText())) {
                     final var totalAmount = StorageUtils.getTotalIncoming(chatId, DateUtils.today());
                     var md = getMD(totalAmount);
-                    log.info("md: {}", md);
+//                    log.info("md: {}", md);
                     /*
                     var md = "\\- Nihao \n \\- ma";
                     String listMessage = "Fukkkk,\n Here's a list:\n";
                     listMessage += "\\- First item\n"; // Escaped hyphen
                     listMessage += "\\- Second item\n"; // Escaped hyphen
                     listMessage += "\\- Third item";
-
                      */
                     sendMD(chatId, md);
                 }

@@ -55,10 +55,10 @@ public class Bot extends TelegramLongPollingBot {
                     sendText(chatId, "Total incoming for %s is %s".formatted(DateUtils.today(), totalAmount));
                 }
             } else if (StringUtils.hasText(message.getText())) {
-                final var incoming = PaywayParser.parseAmountStatic(message.getText());
+                final var incoming = PaywayParser.parseAmountAndCurrency(message.getText());
                 log.info("incoming amount: {}", incoming);
-                if (incoming.compareTo(BigDecimal.ZERO) > 0) {
-                    StorageUtils.addIncoming(chatId, incoming);
+                if (incoming.amount().compareTo(BigDecimal.ZERO) > 0) {
+                    StorageUtils.addIncoming(chatId, incoming.amount(), incoming.currency());
                     sendText(chatId, "Noted income of:%s".formatted(incoming));
                 }
             }

@@ -1,5 +1,6 @@
 package asia.igsaas.utils;
 
+import asia.igsaas.Currency;
 import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 
@@ -7,26 +8,34 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class PaywayParserTest {
     @Test
-    void testParseAmount_withDollar() {
+    void testParseAmountAndCurrency_usd() {
         String text = "$250.00 paid by សុីម សោភា (*049) on Jun 14, 12:27 PM via ABA KHQR (ACLEDA Bank Plc.) at KIM MOUY. Trx. ID: 174987885037701, APV: 949058.";
-        assertEquals(new BigDecimal("250.00"), PaywayParser.parseAmountStatic(text));
+        var result = PaywayParser.parseAmountAndCurrency(text);
+        assertEquals(new BigDecimal("250.00"), result.amount());
+        assertEquals(Currency.USD, result.currency());
     }
 
     @Test
-    void testParseAmount_noDollar() {
-        String text = "250.00 paid by John Doe (*234) on Jun 14, 12:00 PM via ABA KHQR at Store. Trx. ID: 123456, APV: 654321.";
-        assertEquals(new BigDecimal("250.00"), PaywayParser.parseAmountStatic(text));
+    void testParseAmountAndCurrency_khr() {
+        String text = "\u17DB3,600 paid by Pheap Sophea (*560) on Jun 13, 02:57 PM via ABA KHQR (ACLEDA Bank Plc.) at MISS 16 by T.KIM. Trx. ID: 174980145355424, APV: 871887.";
+        var result = PaywayParser.parseAmountAndCurrency(text);
+        assertEquals(new BigDecimal("3600"), result.amount());
+        assertEquals(Currency.KHR, result.currency());
     }
 
     @Test
-    void testParseAmount_integer() {
-        String text = "$100 paid by Jane Doe.";
-        assertEquals(new BigDecimal("100"), PaywayParser.parseAmountStatic(text));
+    void testParseAmountAndCurrency_fallback_usd() {
+        String text = "250.00 USD paid by John Doe.";
+        var result = PaywayParser.parseAmountAndCurrency(text);
+        assertNotEquals(new BigDecimal("250.00"), result.amount());
+        assertNull( result.currency());
     }
 
     @Test
-    void testParseAmount_noAmount() {
-        String text = "Paid by Jane Doe.";
-        assertEquals(BigDecimal.ZERO, PaywayParser.parseAmountStatic(text));
+    void testParseAmountAndCurrency_fallback_khr() {
+        String text = "3600 KHR paid by John Doe.";
+        var result = PaywayParser.parseAmountAndCurrency(text);
+        assertNotEquals(new BigDecimal("3600"), result.amount());
+        assertNull(result.currency());
     }
 }

@@ -1,4 +1,4 @@
-package asia.igsaas.utils;
+package asia.igsaas.helper;
 
 import asia.igsaas.domain.Currency;
 import asia.igsaas.domain.IncomingBalance;

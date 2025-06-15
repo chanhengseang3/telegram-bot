@@ -1,6 +1,6 @@
 package asia.igsaas.utils;
 
-import asia.igsaas.Currency;
+import asia.igsaas.domain.Currency;
 import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 

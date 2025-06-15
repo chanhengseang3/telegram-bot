@@ -1,7 +1,7 @@
 package asia.igsaas.utils;
 
-import asia.igsaas.Currency;
-import asia.igsaas.Result;
+import asia.igsaas.domain.Currency;
+import asia.igsaas.data.Result;
 
 import java.math.BigDecimal;
 import java.util.regex.Matcher;

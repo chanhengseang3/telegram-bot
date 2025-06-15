@@ -1,5 +1,6 @@
-package asia.igsaas;
+package asia.igsaas.data;
 
+import asia.igsaas.domain.Currency;
 import org.springframework.lang.NonNull;
 
 import java.math.BigDecimal;

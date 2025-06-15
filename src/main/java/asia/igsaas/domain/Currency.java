@@ -1,4 +1,4 @@
-package asia.igsaas;
+package asia.igsaas.domain;
 
 import lombok.Getter;
 

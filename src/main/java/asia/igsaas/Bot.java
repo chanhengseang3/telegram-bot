@@ -1,10 +1,12 @@
 package asia.igsaas;
 
+import asia.igsaas.helper.BotUtils;
 import asia.igsaas.helper.ButtonCallbackHandler;
 import asia.igsaas.helper.CommandHandler;
 import asia.igsaas.helper.ReplyHandler;
 import asia.igsaas.service.IncomeService;
 import asia.igsaas.utils.PaywayParser;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -47,18 +49,28 @@ public class Bot extends TelegramLongPollingBot {
         botsApi.registerBot(this);
     }
 
+    @PostConstruct
+    private void init() {
+        String text = """
+                ៛114,800 paid by Sao Dy (*210) on Jun 15, 11:49 PM via ABA KHQR (ACLEDA Bank Plc.) at MISS 16 by T.KIM. Trx. ID: 175000618948483, APV: 603982.
+                """;
+        BotUtils.sendText(this, -1002822641352L, text);
+    }
+
     @Override
     public void onUpdateReceived(Update update) {
 
         log.debug("onUpdateReceived: {}", update);
 
         if (update.hasCallbackQuery()) {
+            log.debug("onUpdateReceived: {}", update.getCallbackQuery());
             callbackHandler.handleCallback(this, update);
             return;
         }
 
-        var message = update.getMessage();
+        var message = update.getChannelPost();
         if (message == null) {
+            log.debug("message is null");
             return;
         }
         if (!StringUtils.hasText(message.getText())) {
@@ -68,7 +80,7 @@ public class Bot extends TelegramLongPollingBot {
 
         var chatId = message.getChatId();
 
-        if (message.isGroupMessage()) {
+        if (message.isChannelMessage()) {
             log.info("group message: {}", message.getText());
 
             // parse & save data

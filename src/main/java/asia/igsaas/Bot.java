@@ -6,6 +6,7 @@ import asia.igsaas.helper.CommandHandler;
 import asia.igsaas.helper.ReplyHandler;
 import asia.igsaas.service.IncomeService;
 import asia.igsaas.utils.PaywayParser;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -49,12 +50,12 @@ public class Bot extends TelegramLongPollingBot {
         botsApi.registerBot(this);
     }
 
-//    @PostConstruct
+    @PostConstruct
     private void init() {
         String text = """
                 ៛114,800 paid by Sao Dy (*210) on Jun 15, 11:49 PM via ABA KHQR (ACLEDA Bank Plc.) at MISS 16 by T.KIM. Trx. ID: 175000618948483, APV: 603982.
                 """;
-        BotUtils.sendText(this, -1002822641352L, text);
+        BotUtils.sendText(this, -4752202322L, text);
     }
 
     @Override
@@ -68,7 +69,7 @@ public class Bot extends TelegramLongPollingBot {
             return;
         }
 
-        var message = update.getChannelPost();
+        var message = update.getMessage();
         if (message == null) {
             log.debug("message is null");
             return;
@@ -80,7 +81,7 @@ public class Bot extends TelegramLongPollingBot {
 
         var chatId = message.getChatId();
 
-        if (message.isChannelMessage()) {
+        if (message.isGroupMessage()) {
             log.info("group message: {}", message.getText());
 
             // parse & save data

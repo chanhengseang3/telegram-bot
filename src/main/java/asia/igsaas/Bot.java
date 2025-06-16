@@ -8,6 +8,7 @@ import asia.igsaas.service.IncomeService;
 import asia.igsaas.utils.PaywayParser;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -22,7 +23,7 @@ import java.math.BigDecimal;
 @Component
 public class Bot extends TelegramLongPollingBot {
 
-//    private static final String BOT_TOKEN = "7188303916:AAEbEbMBabwoyuY-G7rcRIZd-63E2zZywDc";
+    //    private static final String BOT_TOKEN = "7188303916:AAEbEbMBabwoyuY-G7rcRIZd-63E2zZywDc";
     private static final String BOT_TOKEN = "7681368869:AAE5QlSXTOkeQMuJ3S6znuyCeyPVvo1YWFs";
 
     private final IncomeService incomeService;
@@ -30,17 +31,20 @@ public class Bot extends TelegramLongPollingBot {
     private final CommandHandler commandHandler;
     private final ReplyHandler replyHandler;
 
+    @Value("${bot.name}")
+    private String botName;
+
     @Override
     public String getBotUsername() {
-//        return "jianhua2_finance_bot";
-        return "payment_bk_bot";
+        return botName;
     }
 
-    public Bot(IncomeService incomeService,
+    public Bot(@Value("${bot.token}") String botToken,
+               IncomeService incomeService,
                ButtonCallbackHandler callbackHandler,
                CommandHandler commandHandler,
                ReplyHandler replyHandler) throws TelegramApiException {
-        super(BOT_TOKEN);
+        super(botToken);
         this.incomeService = incomeService;
         this.callbackHandler = callbackHandler;
         this.commandHandler = commandHandler;

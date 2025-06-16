@@ -22,8 +22,8 @@ import java.math.BigDecimal;
 @Component
 public class Bot extends TelegramLongPollingBot {
 
-    private static final String BOT_TOKEN = "7188303916:AAEbEbMBabwoyuY-G7rcRIZd-63E2zZywDc";
-//    private static final String BOT_TOKEN = "7681368869:AAE5QlSXTOkeQMuJ3S6znuyCeyPVvo1YWFs";
+//    private static final String BOT_TOKEN = "7188303916:AAEbEbMBabwoyuY-G7rcRIZd-63E2zZywDc";
+    private static final String BOT_TOKEN = "7681368869:AAE5QlSXTOkeQMuJ3S6znuyCeyPVvo1YWFs";
 
     private final IncomeService incomeService;
     private final ButtonCallbackHandler callbackHandler;
@@ -32,8 +32,8 @@ public class Bot extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return "jianhua2_finance_bot";
-//        return "payment_bk_bot";
+//        return "jianhua2_finance_bot";
+        return "payment_bk_bot";
     }
 
     public Bot(IncomeService incomeService,

@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class IncomingBalance implements Serializable {
+public class IncomeBalance implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

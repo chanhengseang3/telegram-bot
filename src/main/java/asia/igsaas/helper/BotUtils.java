@@ -1,7 +1,7 @@
 package asia.igsaas.helper;
 
 import asia.igsaas.domain.Currency;
-import asia.igsaas.domain.IncomingBalance;
+import asia.igsaas.domain.IncomeBalance;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -45,7 +45,7 @@ public class BotUtils {
         }
     }
 
-    public static String getMD(LocalDate date, List<IncomingBalance> results) {
+    public static String getMD(LocalDate date, List<IncomeBalance> results) {
         String md = "សរុបលុយថ្ងៃ: *" + date + "* : \n";
         md = md.replace("-", "\\-");
         if (results.isEmpty()) {
